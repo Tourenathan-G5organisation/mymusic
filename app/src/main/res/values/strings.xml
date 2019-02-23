@@ -5,4 +5,5 @@
     <string name="album_image">album image</string>
     <string name="search_hint">Search artist</string>
     <string name="no_internet_msg">No internet connection! Please check your connection and try again.</string>
+    <string name="artist_image">artist image</string>
 </resources>

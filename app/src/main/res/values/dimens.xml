@@ -3,4 +3,6 @@
     <dimen name="album_image_size">180dp</dimen>
     <dimen name="album_item_text_size">16sp</dimen>
     <dimen name="item_offset">5dp</dimen>
+    <dimen name="artist_list_image_size">90dp</dimen>
+    <dimen name="artist_list_name_margin">10dp</dimen>
 </resources>
