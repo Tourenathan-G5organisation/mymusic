@@ -9,19 +9,28 @@ import android.view.Menu;
 import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.toure.mymusic.api.ApiClient;
+import com.toure.mymusic.api.ApiInterface;
+import com.toure.mymusic.data.ArtistQuery;
 import com.toure.mymusic.util.Utility;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
+    ApiInterface apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_activity);
+        apiService = ApiClient.getClient().create(ApiInterface.class);
+
         handleIntent(getIntent());
     }
 
@@ -49,6 +58,18 @@ public class SearchActivity extends AppCompatActivity {
                 String query = intent.getStringExtra(SearchManager.QUERY);
                 if (!query.isEmpty()) {
                     Log.d(TAG, "Search string: " + query);
+                    Call<ArtistQuery> call = apiService.searchArtist(query, Utility.getApiKey());
+                    call.enqueue(new Callback<ArtistQuery>() {
+                        @Override
+                        public void onResponse(Call<ArtistQuery> call, Response<ArtistQuery> response) {
+                            Log.d(TAG, "Response: " + response.body().getArtists().get(0).toString());
+                        }
+
+                        @Override
+                        public void onFailure(Call<ArtistQuery> call, Throwable t) {
+                            Log.e(TAG, t.getLocalizedMessage());
+                        }
+                    });
                 }
             } else {
                 View parentLayout = findViewById(android.R.id.content);
