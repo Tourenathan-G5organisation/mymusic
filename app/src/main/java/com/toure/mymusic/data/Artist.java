@@ -76,15 +76,10 @@ public class Artist {
      * @return image url
      */
     public String getImageUrl() {
-        String url = null;
         if (image.size() > 0) {
-            for (int i = image.size() - 1; i >= 0; i -= 1) {
-                url = image.get(i).getText();
-                break;
-            }
-            return url;
+            return image.get(image.size() - 1).getText();
         }
-        return url;
+        return null;
     }
 
     @Override
