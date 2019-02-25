@@ -8,4 +8,5 @@
     <string name="artist_image">artist image</string>
     <string name="error_occurred">An error occurred please try again.</string>
     <string name="search_using_artist">Search using the artist name</string>
+    <string name="title_activity_best_album">Best Albums</string>
 </resources>

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.toure.mymusic.OnClickSearchItemListerner;
 import com.toure.mymusic.R;
 import com.toure.mymusic.data.Artist;
 
@@ -23,9 +24,11 @@ public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapte
     private static final String TAC = ArtistSearchAdapter.class.getSimpleName();
     private Context mContext;
     private List<Artist> mData;
+    private OnClickSearchItemListerner mClickHandler;
 
-    public ArtistSearchAdapter(Context mContext) {
+    public ArtistSearchAdapter(Context mContext, OnClickSearchItemListerner handler) {
         this.mContext = mContext;
+        mClickHandler = handler;
     }
 
     @NonNull
@@ -47,7 +50,8 @@ public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapte
                 .with(mContext)
                 .load(mData.get(position).getImageUrl())
                 .centerCrop()
-                .placeholder(R.drawable.album)
+                .placeholder(R.drawable.placeholder_artist_image)
+                .error(R.drawable.placeholder_artist_image)
                 .into(holder.albumImage);
     }
 
@@ -71,11 +75,13 @@ public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapte
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-
+            int pos = getAdapterPosition();
+            mClickHandler.onClick(mData.get(pos).getName());
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.toure.mymusic;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements OnClickSearchItemListerner {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
@@ -44,7 +45,7 @@ public class SearchFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.search_fragment, container, false);
         ButterKnife.bind(this, rootView);
-        mAdapter = new ArtistSearchAdapter(getContext());
+        mAdapter = new ArtistSearchAdapter(getContext(), this);
         mRecyclerView.setHasFixedSize(true);
         DividerItemDecoration divider = new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(divider);
@@ -88,5 +89,12 @@ public class SearchFragment extends Fragment {
         mComment.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.GONE);
         mComment.setText(R.string.error_occurred);
+    }
+
+    @Override
+    public void onClick(String artistName) {
+        Intent intent = new Intent(getContext(), BestAlbumActivity.class);
+        intent.putExtra(Intent.EXTRA_TEXT, artistName);
+        startActivity(intent);
     }
 }
