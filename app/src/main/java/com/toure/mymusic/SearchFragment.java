@@ -4,8 +4,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.toure.mymusic.adapter.ArtistSearchAdapter;
+import com.toure.mymusic.data.Artist;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +29,10 @@ public class SearchFragment extends Fragment {
     @BindView(R.id.artist_recyclerview)
     RecyclerView mRecyclerView;
     ArtistSearchAdapter mAdapter;
+    @BindView(R.id.progress_circular)
+    ProgressBar progressBar;
+    @BindView(R.id.comment)
+    TextView mComment;
 
     public static SearchFragment newInstance() {
         return new SearchFragment();
@@ -35,7 +44,7 @@ public class SearchFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.search_fragment, container, false);
         ButterKnife.bind(this, rootView);
-        mAdapter = new ArtistSearchAdapter();
+        mAdapter = new ArtistSearchAdapter(getContext());
         mRecyclerView.setHasFixedSize(true);
         DividerItemDecoration divider = new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(divider);
@@ -50,4 +59,34 @@ public class SearchFragment extends Fragment {
         // TODO: Use the ViewModel
     }
 
+    void setData(List<Artist> artist) {
+        if (mAdapter != null) {
+            mAdapter.setData(artist);
+        }
+    }
+
+    /**
+     * Display the progress bar
+     */
+    void displayProgress() {
+        progressBar.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
+        mComment.setVisibility(View.GONE);
+    }
+
+    /**
+     * Display the content of the search results
+     */
+    void displayContent() {
+        progressBar.setVisibility(View.GONE);
+        mComment.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    void displayErrorMsg() {
+        progressBar.setVisibility(View.GONE);
+        mComment.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
+        mComment.setText(R.string.error_occurred);
+    }
 }

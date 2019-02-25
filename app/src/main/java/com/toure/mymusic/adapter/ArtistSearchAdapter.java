@@ -7,7 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.toure.mymusic.R;
+import com.toure.mymusic.data.Artist;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +21,12 @@ import butterknife.ButterKnife;
 public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapter.ViewHolder> {
 
     private static final String TAC = ArtistSearchAdapter.class.getSimpleName();
+    private Context mContext;
+    private List<Artist> mData;
+
+    public ArtistSearchAdapter(Context mContext) {
+        this.mContext = mContext;
+    }
 
     @NonNull
     @Override
@@ -31,13 +41,24 @@ public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // TODO: Set the data
+        // TODO: Add corresponding artist placehodler image to glide imageview
+        holder.artistName.setText(mData.get(position).getName());
+        Glide
+                .with(mContext)
+                .load(mData.get(position).getImageUrl())
+                .centerCrop()
+                .placeholder(R.drawable.album)
+                .into(holder.albumImage);
     }
 
     @Override
     public int getItemCount() {
-        //TODO: Change this to the number of elements available
-        return 10;
+        return mData != null ? mData.size() : 0;
+    }
+
+    public void setData(List<Artist> artist) {
+        mData = artist;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

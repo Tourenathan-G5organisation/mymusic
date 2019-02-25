@@ -58,16 +58,21 @@ public class SearchActivity extends AppCompatActivity {
                 String query = intent.getStringExtra(SearchManager.QUERY);
                 if (!query.isEmpty()) {
                     Log.d(TAG, "Search string: " + query);
+                    SearchFragment searchFragment = (SearchFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+                    searchFragment.displayProgress();
                     Call<ArtistQuery> call = apiService.searchArtist(query, Utility.getApiKey());
                     call.enqueue(new Callback<ArtistQuery>() {
                         @Override
                         public void onResponse(Call<ArtistQuery> call, Response<ArtistQuery> response) {
-                            Log.d(TAG, "Response: " + response.body().getArtists().get(0).toString());
+                            // Log.d(TAG, "Response: " + response.body().getArtists().get(0).toString());
+                            searchFragment.setData(response.body().getArtists());
+                            searchFragment.displayContent();
                         }
 
                         @Override
                         public void onFailure(Call<ArtistQuery> call, Throwable t) {
                             Log.e(TAG, t.getLocalizedMessage());
+                            searchFragment.displayErrorMsg();
                         }
                     });
                 }
