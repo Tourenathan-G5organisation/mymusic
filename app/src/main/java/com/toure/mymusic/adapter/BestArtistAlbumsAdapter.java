@@ -7,7 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.toure.mymusic.R;
+import com.toure.mymusic.data.Album;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +22,7 @@ public class BestArtistAlbumsAdapter extends RecyclerView.Adapter<BestArtistAlbu
 
     static final String TAG = BestArtistAlbumsAdapter.class.getSimpleName();
     private Context mContext;
+    private List<Album> mData;
 
     public BestArtistAlbumsAdapter(Context context) {
         this.mContext = context;
@@ -35,15 +40,23 @@ public class BestArtistAlbumsAdapter extends RecyclerView.Adapter<BestArtistAlbu
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
+        holder.albumName.setText(mData.get(position).getName());
+        Glide
+                .with(mContext)
+                .load(mData.get(position).getImageUrl())
+                .centerCrop()
+                .placeholder(R.drawable.placeholder_artist_image)
+                .error(R.drawable.placeholder_artist_image)
+                .into(holder.albumImage);
     }
 
     @Override
     public int getItemCount() {
-        return 10;
+        return (mData != null) ? mData.size() : 0;
     }
 
-    void setData() {
+    public void setData(List<Album> albums) {
+        mData = albums;
         notifyDataSetChanged();
     }
 

@@ -1,12 +1,19 @@
 package com.toure.mymusic;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.toure.mymusic.adapter.BestArtistAlbumsAdapter;
+import com.toure.mymusic.api.ApiClient;
+import com.toure.mymusic.api.ApiInterface;
+import com.toure.mymusic.data.AlbumQuery;
 import com.toure.mymusic.util.ItemOffsetDecoration;
+import com.toure.mymusic.util.Utility;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +21,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class BestAlbumActivity extends AppCompatActivity {
 
@@ -38,7 +48,12 @@ public class BestAlbumActivity extends AppCompatActivity {
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
-        displayContent();
+        if (getIntent() != null && getIntent().hasExtra(Intent.EXTRA_TEXT)) {
+            String artistName = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+            setTitle(String.format(Locale.getDefault(), "%s %s", getString(R.string.title_activity_best_album), artistName));
+            displayProgress();
+            getArtistBestAlbum(artistName);
+        }
     }
 
     /**
@@ -55,6 +70,22 @@ public class BestAlbumActivity extends AppCompatActivity {
     void displayContent() {
         progressBar.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    void getArtistBestAlbum(String artistName) {
+        Call<AlbumQuery> call = ApiClient.getClient().create(ApiInterface.class).getArtistBestAlbum(artistName, Utility.getApiKey());
+        call.enqueue(new Callback<AlbumQuery>() {
+            @Override
+            public void onResponse(Call<AlbumQuery> call, Response<AlbumQuery> response) {
+                mAdapter.setData(response.body().getAlbums());
+                displayContent();
+            }
+
+            @Override
+            public void onFailure(Call<AlbumQuery> call, Throwable t) {
+                Log.e(TAG, t.getLocalizedMessage());
+            }
+        });
     }
 
 }
