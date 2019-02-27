@@ -45,6 +45,8 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.album_image)
     ImageView albumImage;
     TrackAdapter mAdapter;
+    @BindView(R.id.action_save)
+    ImageView saveImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,7 @@ public class DetailActivity extends AppCompatActivity {
         albumName.setVisibility(View.GONE);
         artistName.setVisibility(View.GONE);
         trackCount.setVisibility(View.GONE);
+        saveImageView.setVisibility(View.GONE);
     }
 
     /**
@@ -91,6 +94,7 @@ public class DetailActivity extends AppCompatActivity {
         artistName.setVisibility(View.VISIBLE);
         trackCount.setVisibility(View.VISIBLE);
         albumImage.setVisibility(View.VISIBLE);
+        saveImageView.setVisibility(View.VISIBLE);
     }
 
     void setData(Album album) {

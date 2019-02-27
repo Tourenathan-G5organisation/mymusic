@@ -1,11 +1,13 @@
 package com.toure.mymusic.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.toure.mymusic.PlayTrackActivity;
 import com.toure.mymusic.R;
 import com.toure.mymusic.data.Track;
 
@@ -62,11 +64,15 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-
+            int pos = getAdapterPosition();
+            Intent intent = new Intent(mcContext, PlayTrackActivity.class);
+            intent.putExtra(Intent.EXTRA_TEXT, mData.get(pos).getUrl());
+            mcContext.startActivity(intent);
         }
     }
 }
