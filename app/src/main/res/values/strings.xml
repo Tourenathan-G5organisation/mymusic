@@ -10,4 +10,6 @@
     <string name="search_using_artist">Search using the artist name</string>
     <string name="title_activity_best_album">Best Albums</string>
     <string name="title_activity_detail">DetailActivity</string>
+    <string name="tracks">Tracks</string>
+    <string name="save">Save</string>
 </resources>

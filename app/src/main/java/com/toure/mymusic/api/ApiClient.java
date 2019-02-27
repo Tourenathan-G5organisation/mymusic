@@ -2,6 +2,7 @@ package com.toure.mymusic.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.toure.mymusic.data.Album;
 import com.toure.mymusic.data.AlbumQuery;
 import com.toure.mymusic.data.ArtistQuery;
 
@@ -19,6 +20,7 @@ public class ApiClient {
                     new GsonBuilder()
                             .registerTypeAdapter(ArtistQuery.class, new ArtistDeserializer())
                             .registerTypeAdapter(AlbumQuery.class, new AlbumDeserialiser())
+                            .registerTypeAdapter(Album.class, new AlbumInfoDeserialiser())
                             .create();
 
             retrofit = new Retrofit.Builder()

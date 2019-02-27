@@ -8,4 +8,98 @@
     tools:context=".DetailActivity"
     tools:showIn="@layout/activity_detail">
 
+    <ImageView
+        android:id="@+id/album_image"
+        android:layout_width="@dimen/album_image_size"
+        android:layout_height="@dimen/album_image_size"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/album_image"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/album" />
+
+    <TextView
+        android:id="@+id/album_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/album__detail_text_size"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/album_image"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Album Name" />
+
+    <TextView
+        android:id="@+id/artist_name"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/album_item_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/album_image"
+        app:layout_constraintTop_toBottomOf="@+id/album_name"
+        tools:text="Artist Name" />
+
+    <TextView
+        android:id="@+id/tracks_count"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/album_item_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/album_image"
+        app:layout_constraintTop_toBottomOf="@+id/artist_name"
+        tools:text="11 tracks" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/track_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/album_image"
+        tools:listitem="@layout/track_item_layout" />
+
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/action_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/save"
+        app:layout_constraintBottom_toBottomOf="@+id/album_image"
+        app:layout_constraintStart_toEndOf="@+id/album_image"
+        app:srcCompat="@drawable/ic_action_save" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

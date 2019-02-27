@@ -13,6 +13,8 @@ public class Album {
     private String mbid;
     private String url;
     private List<Image> image;
+    private List<Track> tracks;
+    private String artistName;
 
     public Album(String name, Integer playCount, String mbid, String url, List<Image> image, Artist artist) {
         this.name = name;
@@ -21,6 +23,25 @@ public class Album {
         this.url = url;
         this.image = image;
         this.artist = artist;
+    }
+
+    public Album(String name, Integer playCount, String mbid, String url, List<Image> image, String artistName) {
+        this.name = name;
+        this.playCount = playCount;
+        this.mbid = mbid;
+        this.url = url;
+        this.image = image;
+        this.artistName = artistName;
+    }
+
+    public Album(String name, Integer playCount, String mbid, String url, List<Image> image, String artistName, List<Track> tracks) {
+        this.name = name;
+        this.playCount = playCount;
+        this.mbid = mbid;
+        this.url = url;
+        this.image = image;
+        this.artistName = artistName;
+        this.tracks = tracks;
     }
 
     public String getName() {
@@ -69,6 +90,22 @@ public class Album {
 
     public void setArtist(Artist artist) {
         this.artist = artist;
+    }
+
+    public List<Track> getTracks() {
+        return tracks;
+    }
+
+    public void setTracks(List<Track> tracks) {
+        this.tracks = tracks;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
     }
 
     /**

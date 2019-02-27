@@ -25,7 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BestAlbumActivity extends AppCompatActivity {
+public class BestAlbumActivity extends AppCompatActivity implements OnClickAlbumHandler {
 
     private static final String TAG = BestAlbumActivity.class.getSimpleName();
 
@@ -43,7 +43,7 @@ public class BestAlbumActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
-        mAdapter = new BestArtistAlbumsAdapter(this);
+        mAdapter = new BestArtistAlbumsAdapter(this, this);
         ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(this, R.dimen.item_offset);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setHasFixedSize(true);
@@ -88,4 +88,11 @@ public class BestAlbumActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onClick(String artistName, String albumName) {
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(DetailActivity.ARTIST_NAME, artistName);
+        intent.putExtra(DetailActivity.ALBUM_NAME, albumName);
+        startActivity(intent);
+    }
 }

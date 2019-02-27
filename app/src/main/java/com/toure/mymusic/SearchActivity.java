@@ -65,8 +65,13 @@ public class SearchActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<ArtistQuery> call, Response<ArtistQuery> response) {
                             // Log.d(TAG, "Response: " + response.body().getArtists().get(0).toString());
-                            searchFragment.setData(response.body().getArtists());
-                            searchFragment.displayContent();
+                            if (response.body() != null) {
+                                searchFragment.setData(response.body().getArtists());
+                                searchFragment.displayContent();
+                            } else {
+                                searchFragment.displayErrorMsg();
+                            }
+
                         }
 
                         @Override
