@@ -4,42 +4,79 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Album {
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
-    private Artist artist;
-    private String name;
-    @SerializedName("playcount")
-    private Integer playCount;
+@Entity(tableName = "albums")
+public class Album {
+    @PrimaryKey
     private String mbid;
-    private String url;
-    private List<Image> image;
-    private List<Track> tracks;
+
+    @ColumnInfo(name = "album_name")
+    // Used by room to reference the corresponding fields in the SQLite table
+    private String name;
+
+    @ColumnInfo(name = "artist_name")
     private String artistName;
 
-    public Album(String name, Integer playCount, String mbid, String url, List<Image> image, Artist artist) {
+    @ColumnInfo(name = "play_count")
+    @SerializedName("playcount")
+    private Integer playCount;
+
+    @ColumnInfo(name = "url")
+    private String url;
+
+    @SerializedName("image")
+    @Ignore //Use by room to ignore this field when creating an object of the entity
+    private List<Image> images;
+
+    @ColumnInfo(name = "tracks")
+    private List<Track> tracks;
+
+    @ColumnInfo(name = "album_image")
+    private String albumImage;
+
+    @Ignore
+    public Album(String name, Integer playCount, String mbid, String url, List<Image> images) {
         this.name = name;
         this.playCount = playCount;
         this.mbid = mbid;
         this.url = url;
-        this.image = image;
-        this.artist = artist;
+        this.images = images;
     }
 
-    public Album(String name, Integer playCount, String mbid, String url, List<Image> image, String artistName) {
+    @Ignore
+    public Album(String name, Integer playCount, String mbid, String url, List<Image> images, String artistName) {
         this.name = name;
         this.playCount = playCount;
         this.mbid = mbid;
         this.url = url;
-        this.image = image;
+        this.images = images;
         this.artistName = artistName;
+        getImageUrl();
     }
 
-    public Album(String name, Integer playCount, String mbid, String url, List<Image> image, String artistName, List<Track> tracks) {
+    @Ignore
+    public Album(String name, Integer playCount, String mbid, String url, List<Image> images, String artistName, List<Track> tracks) {
         this.name = name;
         this.playCount = playCount;
         this.mbid = mbid;
         this.url = url;
-        this.image = image;
+        this.images = images;
+        this.artistName = artistName;
+        this.tracks = tracks;
+        getImageUrl();
+    }
+
+    public Album(String mbid, String name, Integer playCount, String url, String albumImage, String artistName, List<Track> tracks) {
+        this.name = name;
+        this.playCount = playCount;
+        this.mbid = mbid;
+        this.url = url;
+        this.albumImage = albumImage;
         this.artistName = artistName;
         this.tracks = tracks;
     }
@@ -60,11 +97,12 @@ public class Album {
         this.playCount = playCount;
     }
 
+    @NonNull
     public String getMbid() {
         return mbid;
     }
 
-    public void setMbid(String mbid) {
+    public void setMbid(@NonNull String mbid) {
         this.mbid = mbid;
     }
 
@@ -76,20 +114,12 @@ public class Album {
         this.url = url;
     }
 
-    public List<Image> getImage() {
-        return image;
+    public List<Image> getImages() {
+        return images;
     }
 
-    public void setImage(List<Image> image) {
-        this.image = image;
-    }
-
-    public Artist getArtist() {
-        return artist;
-    }
-
-    public void setArtist(Artist artist) {
-        this.artist = artist;
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 
     public List<Track> getTracks() {
@@ -108,15 +138,29 @@ public class Album {
         this.artistName = artistName;
     }
 
+    public String getAlbumImage() {
+        return albumImage;
+    }
+
+    public void setAlbumImage(String albumImage) {
+        this.albumImage = albumImage;
+    }
+
     /**
-     * Get the best image quality among the available artist images
+     * Get the best images quality among the available artist images
      *
-     * @return image url
+     * @return images url
      */
     public String getImageUrl() {
-        if (image.size() > 0) {
-            return image.get(image.size() - 1).getText();
+        if (albumImage != null) {
+            return albumImage;
+        } else {
+            if (images.size() > 0) {
+                albumImage = images.get(images.size() - 1).getText();
+                return albumImage;
+            }
         }
+
         return null;
     }
 }
