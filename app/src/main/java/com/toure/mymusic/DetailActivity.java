@@ -13,12 +13,17 @@ import com.toure.mymusic.adapter.TrackAdapter;
 import com.toure.mymusic.api.ApiClient;
 import com.toure.mymusic.api.ApiInterface;
 import com.toure.mymusic.data.Album;
+import com.toure.mymusic.data.AppDatabase;
+import com.toure.mymusic.data.AppExecutors;
 import com.toure.mymusic.util.Utility;
 
 import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -47,6 +52,11 @@ public class DetailActivity extends AppCompatActivity {
     TrackAdapter mAdapter;
     @BindView(R.id.action_save)
     ImageView saveImageView;
+    // App Database reference
+    private AppDatabase mDb;
+
+    private boolean itemExist = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +66,7 @@ public class DetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
         mAdapter = new TrackAdapter(this);
+        mDb = AppDatabase.getsInstance(getApplicationContext());
         DividerItemDecoration divider = new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(divider);
         mRecyclerView.setHasFixedSize(true);
@@ -110,6 +121,46 @@ public class DetailActivity extends AppCompatActivity {
         artistName.setText(album.getArtistName());
         trackCount.setText(String.format(Locale.getDefault(), "%d %s", album.getTracks().size(), getString(R.string.tracks)));
         mAdapter.setData(album.getTracks());
+
+        saveImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Save the album locally
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (itemExist) {
+                            mDb.albumDao().delete(album);
+                        } else {
+                            mDb.albumDao().insert(album);
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (itemExist) {
+                                    Toast.makeText(DetailActivity.this, R.string.album_deleted_successfully, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(DetailActivity.this, R.string.album_saved_successfully, Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        LiveData<Album> albumLiveData = mDb.albumDao().getAlbum(album.getName(), album.getArtistName());
+        albumLiveData.observe(this, new Observer<Album>() {
+            @Override
+            public void onChanged(Album album) {
+                if (album == null) {
+                    itemExist = false;
+                    saveImageView.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_action_save));
+                } else {
+                    itemExist = true;
+                    saveImageView.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_action_delete));
+                }
+            }
+        });
     }
 
     void getAlbumInfo(String artistName, String albumName) {
@@ -130,4 +181,6 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

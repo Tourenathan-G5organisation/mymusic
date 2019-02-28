@@ -102,6 +102,6 @@
         app:layout_constraintBottom_toTopOf="@+id/track_recyclerview"
         app:layout_constraintStart_toEndOf="@+id/album_image"
         app:layout_constraintTop_toBottomOf="@+id/tracks_count"
-        app:srcCompat="@drawable/ic_action_save" />
+        app:srcCompat="@drawable/ic_action_delete" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

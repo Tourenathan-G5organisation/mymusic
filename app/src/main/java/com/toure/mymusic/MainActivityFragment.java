@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -53,16 +52,16 @@ public class MainActivityFragment extends Fragment {
         mDb = AppDatabase.getsInstance(getActivity().getApplicationContext());
         mRecyclerView.setVisibility(View.GONE);
         LiveData<List<Album>> allAlbums = mDb.albumDao().getAllAlbums();
-        allAlbums.observe(this, new Observer<List<Album>>() {
-            @Override
-            public void onChanged(List<Album> albums) {
-                if (albums != null && albums.size() > 0) {
-                    Log.d("Main", "albums: " + albums.size());
-                    messageTextView.setVisibility(View.GONE);
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                    mAdapter.setData(albums);
-                }
+        allAlbums.observe(this, albums -> {
+            if (albums != null && albums.size() > 0) {
+                Log.d("Main", "albums: " + albums.size());
+                messageTextView.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+            } else {
+                messageTextView.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
             }
+            mAdapter.setData(albums);
         });
 
         return view;

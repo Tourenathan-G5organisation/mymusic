@@ -15,4 +15,6 @@
     <string name="title_activity_play_track">Playing track</string>
     <string name="loading">Loading</string>
     <string name="no_album">No album saved</string>
+    <string name="album_saved_successfully">Album saved successfully</string>
+    <string name="album_deleted_successfully">Album deleted successfully</string>
 </resources>

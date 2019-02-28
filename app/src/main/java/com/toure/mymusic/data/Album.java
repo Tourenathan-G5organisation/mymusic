@@ -8,19 +8,19 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
 
-@Entity(tableName = "albums")
+@Entity(tableName = "albums", primaryKeys = {"album_name", "artist_name"})
 public class Album {
 
-    @NonNull
-    @PrimaryKey
+    @ColumnInfo(name = "mbid")
     private String mbid;
 
+    @NonNull
     @ColumnInfo(name = "album_name")
     // Used by room to reference the corresponding fields in the SQLite table
     private String name;
 
+    @NonNull
     @ColumnInfo(name = "artist_name")
     private String artistName;
 
@@ -73,7 +73,7 @@ public class Album {
         getImageUrl();
     }
 
-    public Album(String mbid, String name, Integer playCount, String url, String albumImage, String artistName, List<Track> tracks) {
+    public Album(String name, Integer playCount, String mbid, String url, String albumImage, String artistName, List<Track> tracks) {
         this.name = name;
         this.playCount = playCount;
         this.mbid = mbid;
@@ -87,7 +87,7 @@ public class Album {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
@@ -136,7 +136,7 @@ public class Album {
         return artistName;
     }
 
-    public void setArtistName(String artistName) {
+    public void setArtistName(@NonNull String artistName) {
         this.artistName = artistName;
     }
 

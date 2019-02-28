@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.toure.mymusic.R;
 import com.toure.mymusic.data.Album;
 
@@ -40,6 +41,15 @@ public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // TODO: Set the data
+        holder.albumName.setText(mData.get(position).getName());
+        holder.artistName.setText(mData.get(position).getArtistName());
+        Glide
+                .with(mContext)
+                .load(mData.get(position).getImageUrl())
+                .centerCrop()
+                .placeholder(R.drawable.placeholder_artist_image)
+                .error(R.drawable.placeholder_artist_image)
+                .into(holder.albumImage);
     }
 
     @Override
@@ -47,12 +57,8 @@ public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.Vi
         return mData != null ? mData.size() : 0;
     }
 
-    public void setData(@NonNull List<Album> albums) {
-        if (mData == null) {
-            mData = albums;
-        } else {
-            mData.addAll(albums);
-        }
+    public void setData(List<Album> albums) {
+        mData = albums;
         notifyDataSetChanged();
     }
 
