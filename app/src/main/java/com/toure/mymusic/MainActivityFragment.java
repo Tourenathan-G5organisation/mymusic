@@ -1,5 +1,6 @@
 package com.toure.mymusic;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements OnClickAlbumHandler {
 
     private MainActivityViewModel mViewModel;
 
@@ -30,14 +31,14 @@ public class MainActivityFragment extends Fragment {
     RecyclerView mRecyclerView;
     @BindView(R.id.messageTextview)
     TextView messageTextView;
-    MainScreenAdapter mAdapter;
+    private MainScreenAdapter mAdapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_activity_fragment, container, false);
         ButterKnife.bind(this, view);
-        mAdapter = new MainScreenAdapter(getActivity());
+        mAdapter = new MainScreenAdapter(getActivity(), this);
         ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_offset);
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setHasFixedSize(true);
@@ -63,4 +64,11 @@ public class MainActivityFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onClick(String artistName, String albumName) {
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        intent.putExtra(DetailActivity.ARTIST_NAME, artistName);
+        intent.putExtra(DetailActivity.ALBUM_NAME, albumName);
+        startActivity(intent);
+    }
 }

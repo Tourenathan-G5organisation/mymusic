@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.toure.mymusic.OnClickAlbumHandler;
 import com.toure.mymusic.R;
 import com.toure.mymusic.data.Album;
 
@@ -23,9 +24,11 @@ public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.Vi
     private static final String TAC = MainScreenAdapter.class.getSimpleName();
     private Context mContext;
     private List<Album> mData;
+    private OnClickAlbumHandler mClickHandler;
 
-    public MainScreenAdapter(Context mContext) {
+    public MainScreenAdapter(Context mContext, OnClickAlbumHandler handler) {
         this.mContext = mContext;
+        mClickHandler = handler;
     }
 
     @NonNull
@@ -74,11 +77,13 @@ public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.Vi
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            //TODO: Implement the click event which displays the details view
+            int pos = getAdapterPosition();
+            mClickHandler.onClick(mData.get(pos).getArtistName(), mData.get(pos).getName());
         }
     }
 }
