@@ -56,13 +56,17 @@ public class SearchFragment extends Fragment implements OnClickSearchItemListern
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
-        // TODO: Use the ViewModel
+        mViewModel = ViewModelProviders.of(getActivity()).get(SearchViewModel.class);
+        mViewModel.getArtistLive().observe(this, artists -> {
+            setData(artists);
+        });
+
     }
 
-    void setData(List<Artist> artist) {
-        if (mAdapter != null) {
+    private void setData(List<Artist> artist) {
+        if (artist != null && artist.size() > 0) {
             mAdapter.setData(artist);
+            displayContent();
         }
     }
 

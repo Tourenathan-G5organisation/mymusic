@@ -16,6 +16,7 @@ import com.toure.mymusic.util.Utility;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.ViewModelProviders;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,7 +67,8 @@ public class SearchActivity extends AppCompatActivity {
                         public void onResponse(Call<ArtistQuery> call, Response<ArtistQuery> response) {
                             // Log.d(TAG, "Response: " + response.body().getArtists().get(0).toString());
                             if (response.body() != null) {
-                                searchFragment.setData(response.body().getArtists());
+                                SearchViewModel mViewModel = ViewModelProviders.of(SearchActivity.this).get(SearchViewModel.class);
+                                mViewModel.setArtistData(response.body().getArtists());
                                 searchFragment.displayContent();
                             } else {
                                 searchFragment.displayErrorMsg();

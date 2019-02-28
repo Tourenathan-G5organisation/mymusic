@@ -8,16 +8,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.toure.mymusic.adapter.MainScreenAdapter;
-import com.toure.mymusic.data.Album;
-import com.toure.mymusic.data.AppDatabase;
 import com.toure.mymusic.util.ItemOffsetDecoration;
-
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -36,8 +31,6 @@ public class MainActivityFragment extends Fragment {
     @BindView(R.id.messageTextview)
     TextView messageTextView;
     MainScreenAdapter mAdapter;
-    // App Database reference
-    private AppDatabase mDb;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -49,10 +42,15 @@ public class MainActivityFragment extends Fragment {
         mRecyclerView.addItemDecoration(itemDecoration);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
-        mDb = AppDatabase.getsInstance(getActivity().getApplicationContext());
         mRecyclerView.setVisibility(View.GONE);
-        LiveData<List<Album>> allAlbums = mDb.albumDao().getAllAlbums();
-        allAlbums.observe(this, albums -> {
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+        mViewModel.getAlbums().observe(this, albums -> {
             if (albums != null && albums.size() > 0) {
                 Log.d("Main", "albums: " + albums.size());
                 messageTextView.setVisibility(View.GONE);
@@ -63,15 +61,6 @@ public class MainActivityFragment extends Fragment {
             }
             mAdapter.setData(albums);
         });
-
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-        // TODO: Use the ViewModel
     }
 
 }
