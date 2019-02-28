@@ -12,6 +12,8 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "albums")
 public class Album {
+
+    @NonNull
     @PrimaryKey
     private String mbid;
 

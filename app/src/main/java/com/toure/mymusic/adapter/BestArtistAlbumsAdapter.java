@@ -1,6 +1,7 @@
 package com.toure.mymusic.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ public class BestArtistAlbumsAdapter extends RecyclerView.Adapter<BestArtistAlbu
     private Context mContext;
     private List<Album> mData;
     private OnClickAlbumHandler mClickHandler;
+    private String artistName;
 
     public BestArtistAlbumsAdapter(Context context, OnClickAlbumHandler handler) {
         this.mContext = context;
@@ -63,6 +65,10 @@ public class BestArtistAlbumsAdapter extends RecyclerView.Adapter<BestArtistAlbu
         notifyDataSetChanged();
     }
 
+    public void setArtist(String artistname) {
+        artistName = artistname;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.album_image)
@@ -79,7 +85,8 @@ public class BestArtistAlbumsAdapter extends RecyclerView.Adapter<BestArtistAlbu
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
-            mClickHandler.onClick(mData.get(pos).getArtist().getName(), mData.get(pos).getName());
+            Log.d(TAG, artistName + " " + mData.get(pos).getName());
+            mClickHandler.onClick(artistName, mData.get(pos).getName());
         }
     }
 }

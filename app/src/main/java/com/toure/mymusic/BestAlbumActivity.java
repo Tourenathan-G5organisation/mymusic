@@ -77,6 +77,7 @@ public class BestAlbumActivity extends AppCompatActivity implements OnClickAlbum
         call.enqueue(new Callback<AlbumQuery>() {
             @Override
             public void onResponse(Call<AlbumQuery> call, Response<AlbumQuery> response) {
+                mAdapter.setArtist(response.body().getArtistName());
                 mAdapter.setData(response.body().getAlbums());
                 displayContent();
             }

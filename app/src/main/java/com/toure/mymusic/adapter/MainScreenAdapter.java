@@ -8,6 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.toure.mymusic.R;
+import com.toure.mymusic.data.Album;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,13 +20,18 @@ import butterknife.ButterKnife;
 public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.ViewHolder> {
 
     private static final String TAC = MainScreenAdapter.class.getSimpleName();
+    private Context mContext;
+    private List<Album> mData;
+
+    public MainScreenAdapter(Context mContext) {
+        this.mContext = mContext;
+    }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
         int layoutIdForListItem = R.layout.album_item_layout;
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         boolean shouldAttachToParentImmediately = false;
         View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
         return new ViewHolder(view);
@@ -36,8 +44,16 @@ public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.Vi
 
     @Override
     public int getItemCount() {
-        //TODO: Change this to the number of elements available
-        return 10;
+        return mData != null ? mData.size() : 0;
+    }
+
+    public void setData(@NonNull List<Album> albums) {
+        if (mData == null) {
+            mData = albums;
+        } else {
+            mData.addAll(albums);
+        }
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
