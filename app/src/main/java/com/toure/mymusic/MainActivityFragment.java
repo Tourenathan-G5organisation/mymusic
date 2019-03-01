@@ -69,6 +69,7 @@ public class MainActivityFragment extends Fragment implements OnClickAlbumHandle
         Intent intent = new Intent(getActivity(), DetailActivity.class);
         intent.putExtra(DetailActivity.ARTIST_NAME, artistName);
         intent.putExtra(DetailActivity.ALBUM_NAME, albumName);
+        intent.putExtra(DetailActivity.ALBUM_FROM_DB, true);
         startActivity(intent);
     }
 }

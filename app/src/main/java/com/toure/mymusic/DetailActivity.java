@@ -2,6 +2,7 @@ package com.toure.mymusic;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -18,12 +19,14 @@ import com.toure.mymusic.data.AppExecutors;
 import com.toure.mymusic.util.Utility;
 
 import java.util.Locale;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -36,6 +39,8 @@ public class DetailActivity extends AppCompatActivity {
 
     public static final String ARTIST_NAME = "artist_name";
     public static final String ALBUM_NAME = "album_name";
+    public static final String ALBUM_FROM_DB = "album_from_db";
+
     static final String TAG = DetailActivity.class.getSimpleName();
     @BindView(R.id.track_recyclerview)
     RecyclerView mRecyclerView;
@@ -56,6 +61,7 @@ public class DetailActivity extends AppCompatActivity {
     private AppDatabase mDb;
 
     private boolean itemExist = false;
+    AlbumDetailsViewModel mViewModel;
 
 
     @Override
@@ -64,6 +70,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
         mAdapter = new TrackAdapter(this);
         mDb = AppDatabase.getsInstance(getApplicationContext());
@@ -77,7 +84,34 @@ public class DetailActivity extends AppCompatActivity {
                 String artistName = getIntent().getStringExtra(ARTIST_NAME);
                 String artistAlbum = getIntent().getStringExtra(ALBUM_NAME);
                 displayProgress();
-                getAlbumInfo(artistName, artistAlbum);
+                //getAlbumInfo(artistName, artistAlbum);
+                AlbumDetailsViewModelFactory factory =
+                        new AlbumDetailsViewModelFactory(getApplication(), artistAlbum, artistName, getIntent().getBooleanExtra(ALBUM_FROM_DB, false));
+                mViewModel = ViewModelProviders.of(this, factory)
+                        .get(AlbumDetailsViewModel.class);
+                mViewModel.getAlbumLiveData().observe(this, album -> {
+                    if (mViewModel.isDataFromDb()) {
+                        setItemExist(true);
+                    } else {
+                        //
+                        LiveData<Album> data = mDb.albumDao().getAlbum(album.getName(), album.getArtistName());
+                        data.observe(this, albumData -> {
+                            if (albumData == null) {
+                                setItemExist(false);
+                            } else {
+                                setItemExist(true);
+                            }
+                        });
+                    }
+                    if (album == null) {
+                        // Close activity if there is no detail information about this album
+                        finish();
+                    } else {
+                        setData(album);
+                        displayContent();
+                    }
+
+                });
             }
         }
     }
@@ -108,7 +142,7 @@ public class DetailActivity extends AppCompatActivity {
         saveImageView.setVisibility(View.VISIBLE);
     }
 
-    void setData(Album album) {
+    void setData(@NonNull Album album) {
         Glide
                 .with(this)
                 .load(album.getImageUrl())
@@ -139,28 +173,28 @@ public class DetailActivity extends AppCompatActivity {
                             public void run() {
                                 if (itemExist) {
                                     Toast.makeText(DetailActivity.this, R.string.album_deleted_successfully, Toast.LENGTH_LONG).show();
+                                    if (mViewModel.isDataFromDb()) {
+                                        finish();
+                                    }
                                 } else {
                                     Toast.makeText(DetailActivity.this, R.string.album_saved_successfully, Toast.LENGTH_LONG).show();
                                 }
+                                setItemExist(!itemExist);
                             }
                         });
                     }
                 });
             }
         });
-        LiveData<Album> albumLiveData = mDb.albumDao().getAlbum(album.getName(), album.getArtistName());
-        albumLiveData.observe(this, new Observer<Album>() {
-            @Override
-            public void onChanged(Album album) {
-                if (album == null) {
-                    itemExist = false;
-                    saveImageView.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_action_save));
-                } else {
-                    itemExist = true;
-                    saveImageView.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_action_delete));
-                }
-            }
-        });
+    }
+
+    void setItemExist(boolean exist) {
+        itemExist = exist;
+        if (itemExist) {
+            saveImageView.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_action_delete));
+        } else {
+            saveImageView.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_action_save));
+        }
     }
 
     void getAlbumInfo(String artistName, String albumName) {
@@ -182,5 +216,12 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
