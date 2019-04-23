@@ -9,29 +9,22 @@ import android.view.Menu;
 import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.toure.mymusic.api.ApiClient;
-import com.toure.mymusic.api.ApiInterface;
-import com.toure.mymusic.data.ArtistQuery;
 import com.toure.mymusic.util.Utility;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProviders;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
-    ApiInterface apiService;
+    SearchViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_activity);
-        apiService = ApiClient.getClient().create(ApiInterface.class);
-
+        mViewModel = ViewModelProviders.of(SearchActivity.this).get(SearchViewModel.class);
         handleIntent(getIntent());
     }
 
@@ -61,27 +54,19 @@ public class SearchActivity extends AppCompatActivity {
                     Log.d(TAG, "Search string: " + query);
                     SearchFragment searchFragment = (SearchFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
                     searchFragment.displayProgress();
-                    Call<ArtistQuery> call = apiService.searchArtist(query, Utility.getApiKey());
-                    call.enqueue(new Callback<ArtistQuery>() {
-                        @Override
-                        public void onResponse(Call<ArtistQuery> call, Response<ArtistQuery> response) {
-                            // Log.d(TAG, "Response: " + response.body().getArtists().get(0).toString());
-                            if (response.body() != null) {
-                                SearchViewModel mViewModel = ViewModelProviders.of(SearchActivity.this).get(SearchViewModel.class);
-                                mViewModel.setArtistData(response.body().getArtists());
-                                searchFragment.displayContent();
-                            } else {
-                                searchFragment.displayErrorMsg();
-                            }
-
+                    mViewModel.searchArtist(query);
+                    mViewModel.getSearchStatus().observe(this, integer -> {
+                        if (integer.equals(mViewModel.SUCCESS)){
+                            searchFragment.displayContent();
                         }
-
-                        @Override
-                        public void onFailure(Call<ArtistQuery> call, Throwable t) {
-                            Log.e(TAG, t.getLocalizedMessage());
+                        else if (integer.equals(mViewModel.NO_RESULTS)){
+                            searchFragment.displayErrorMsg(query);
+                        }
+                        else if (integer.equals(mViewModel.FAILURE)){
                             searchFragment.displayErrorMsg();
                         }
                     });
+
                 }
             } else {
                 View parentLayout = findViewById(android.R.id.content);

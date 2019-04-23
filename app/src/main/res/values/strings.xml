@@ -6,6 +6,7 @@
     <string name="search_hint">Search artist</string>
     <string name="no_internet_msg">No internet connection! Please check your connection and try again.</string>
     <string name="artist_image">artist images</string>
+    <string name="no_item_msg">No result found for &lt;b>%1$s&lt;/b></string>
     <string name="error_occurred">An error occurred please try again.</string>
     <string name="search_using_artist">Search using the artist name</string>
     <string name="title_activity_best_album">Best Albums</string>

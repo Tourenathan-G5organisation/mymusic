@@ -2,6 +2,8 @@ package com.toure.mymusic;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,6 +88,14 @@ public class SearchFragment extends Fragment implements OnClickSearchItemListern
         progressBar.setVisibility(View.GONE);
         mComment.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    void displayErrorMsg(String searchArtistName) {
+        String text = getString(R.string.no_item_msg, TextUtils.htmlEncode(searchArtistName));
+        progressBar.setVisibility(View.GONE);
+        mComment.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
+        mComment.setText(Html.fromHtml(text));
     }
 
     void displayErrorMsg() {
