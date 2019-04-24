@@ -54,16 +54,19 @@ public class SearchActivity extends AppCompatActivity {
                     Log.d(TAG, "Search string: " + query);
                     SearchFragment searchFragment = (SearchFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
                     searchFragment.displayProgress();
-                    mViewModel.searchArtist(query);
+                    mViewModel.setQueryString(query);
                     mViewModel.getSearchStatus().observe(this, integer -> {
-                        if (integer.equals(mViewModel.SUCCESS)){
+                        if (integer.equals(SearchViewModel.SUCCESS)){
                             searchFragment.displayContent();
                         }
-                        else if (integer.equals(mViewModel.NO_RESULTS)){
+                        else if (integer.equals(SearchViewModel.NO_RESULTS)){
                             searchFragment.displayErrorMsg(query);
                         }
-                        else if (integer.equals(mViewModel.FAILURE)){
+                        else if (integer.equals(SearchViewModel.FAILURE)){
                             searchFragment.displayErrorMsg();
+                        }
+                        else {
+                            searchFragment.displayProgress();
                         }
                     });
 

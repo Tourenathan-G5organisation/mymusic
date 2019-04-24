@@ -1,37 +1,58 @@
 package com.toure.mymusic;
 
-import android.util.Log;
-
-import com.toure.mymusic.api.ApiClient;
-import com.toure.mymusic.api.ApiInterface;
+import com.toure.mymusic.data.AppExecutors;
 import com.toure.mymusic.data.Artist;
-import com.toure.mymusic.data.ArtistQuery;
-import com.toure.mymusic.util.Utility;
+import com.toure.mymusic.paging.ArtistDataSource;
+import com.toure.mymusic.paging.ArtistDataSourceFactory;
 
-import java.util.List;
-
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 public class SearchViewModel extends ViewModel {
-    private static final String TAG = SearchViewModel.class.getSimpleName();
-    final int SUCCESS = 1;
-    final int FAILURE = 0;
-    final int NO_RESULTS = 2;
-    private MutableLiveData<Integer> searchStatus = new MutableLiveData<>();
 
-    private MutableLiveData<List<Artist>> artistLive = new MutableLiveData<>();
+    private static final String TAG = SearchViewModel.class.getSimpleName();
+    public static final int SUCCESS = 1;
+    public static final int FAILURE = 0;
+    public static final int NO_RESULTS = 2;
+    private PagedList.Config pagedListConfig;
+    private LiveData<Integer> searchStatus = new MutableLiveData<>();
+    private LiveData<PagedList<Artist>> artistLive;
+    private LiveData<ArtistDataSource> mostRecentDataSource;
+    private ArtistDataSourceFactory artistDataSourceFactory;
+
+
     public SearchViewModel() {
-        super();
-        this.searchStatus.setValue(-1);
+        artistDataSourceFactory = new ArtistDataSourceFactory(null);
+        mostRecentDataSource = artistDataSourceFactory.getSourceLiveData();
+
+        pagedListConfig =
+                (new PagedList.Config.Builder())
+                        .setEnablePlaceholders(false)
+                        .setPageSize(ArtistDataSource.PAGE_SIZE)
+                        .build();
+
+        artistLive = (new LivePagedListBuilder<Integer, Artist>(artistDataSourceFactory, pagedListConfig))
+                .setFetchExecutor(AppExecutors.getInstance().networkIO())
+                .build();
     }
 
-    LiveData<List<Artist>> getArtistLive() {
+    void setQueryString(String queryString) {
+        artistDataSourceFactory.setQueryString(queryString);
+
+        if (mostRecentDataSource != null) {
+            mostRecentDataSource.getValue().invalidate();
+            searchStatus = Transformations.switchMap(mostRecentDataSource, ArtistDataSource::getSearchStatus);
+        }
+
+
+
+    }
+
+    LiveData<PagedList<Artist>> getArtistLiveData() {
         if (artistLive == null) {
             artistLive = new MutableLiveData<>();
         }
@@ -43,40 +64,5 @@ public class SearchViewModel extends ViewModel {
             searchStatus = new MutableLiveData<>();
         }
         return searchStatus;
-    }
-
-    /**
-     * Searches for the artists with names similar to search query
-     * @param artistName The artist name to search for.
-     */
-    void searchArtist(String artistName) {
-
-        Call<ArtistQuery> call =  ApiClient.getClient().create(ApiInterface.class)
-                .searchArtist(artistName, Utility.getApiKey());
-        call.enqueue(new Callback<ArtistQuery>() {
-            @Override
-            public void onResponse(Call<ArtistQuery> call, Response<ArtistQuery> response) {
-                // Log.d(TAG, "Response: " + response.body().getArtists().get(0).toString());
-                if (response.body() != null) {
-                   List<Artist> artists = response.body().getArtists();
-                    artistLive.postValue(artists);
-                    if (artists.size()>0){
-                        searchStatus.postValue(SUCCESS);
-                    }else {
-                        searchStatus.postValue(NO_RESULTS);
-                    }
-
-                } else {
-                    searchStatus.postValue(FAILURE);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<ArtistQuery> call, @NonNull Throwable t) {
-                Log.e(TAG, t.getLocalizedMessage());
-                searchStatus.postValue(FAILURE);
-            }
-        });
     }
 }

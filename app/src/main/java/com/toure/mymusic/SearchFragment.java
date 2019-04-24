@@ -11,9 +11,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.toure.mymusic.adapter.ArtistSearchAdapter;
-import com.toure.mymusic.data.Artist;
-
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +28,7 @@ public class SearchFragment extends Fragment implements OnClickSearchItemListern
     private SearchViewModel mViewModel;
     @BindView(R.id.artist_recyclerview)
     RecyclerView mRecyclerView;
-    ArtistSearchAdapter mAdapter;
+    private ArtistSearchAdapter mAdapter;
     @BindView(R.id.progress_circular)
     ProgressBar progressBar;
     @BindView(R.id.comment)
@@ -59,18 +56,12 @@ public class SearchFragment extends Fragment implements OnClickSearchItemListern
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(getActivity()).get(SearchViewModel.class);
-        mViewModel.getArtistLive().observe(this, artists -> {
-            setData(artists);
+        mViewModel.getArtistLiveData().observe(this, artistPagedList -> {
+            mAdapter.submitList(artistPagedList);
         });
 
     }
 
-    private void setData(List<Artist> artist) {
-        if (artist != null && artist.size() > 0) {
-            mAdapter.setData(artist);
-            displayContent();
-        }
-    }
 
     /**
      * Display the progress bar
@@ -86,8 +77,8 @@ public class SearchFragment extends Fragment implements OnClickSearchItemListern
      */
     void displayContent() {
         progressBar.setVisibility(View.GONE);
-        mComment.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
+        mComment.setVisibility(View.GONE);
     }
 
     void displayErrorMsg(String searchArtistName) {

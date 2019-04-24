@@ -12,24 +12,31 @@ import com.toure.mymusic.OnClickSearchItemListerner;
 import com.toure.mymusic.R;
 import com.toure.mymusic.data.Artist;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapter.ViewHolder> {
+public class ArtistSearchAdapter extends PagedListAdapter<Artist, ArtistSearchAdapter.ViewHolder> {
 
     private static final String TAC = ArtistSearchAdapter.class.getSimpleName();
     private Context mContext;
-    private List<Artist> mData;
     private OnClickSearchItemListerner mClickHandler;
 
-    public ArtistSearchAdapter(Context mContext, OnClickSearchItemListerner handler) {
-        this.mContext = mContext;
-        mClickHandler = handler;
-    }
+    private static DiffUtil.ItemCallback<Artist> DIFF_CALLBACK = new DiffUtil.ItemCallback<Artist>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Artist oldItem, @NonNull Artist newItem) {
+
+            return oldItem.getMbid().equals(newItem.getMbid());
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Artist oldItem, @NonNull Artist newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
 
     @NonNull
     @Override
@@ -42,20 +49,13 @@ public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapte
         return new ArtistSearchAdapter.ViewHolder(view);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // TODO: Add corresponding artist placehodler image to glide imageview
-        holder.artistName.setText(mData.get(position).getName());
-        Glide
-                .with(mContext)
-                .load(mData.get(position).getImageUrl())
-                .centerCrop()
-                .placeholder(R.drawable.placeholder_artist_image)
-                .error(R.drawable.placeholder_artist_image)
-                .into(holder.albumImage);
+    public ArtistSearchAdapter(Context mContext, OnClickSearchItemListerner handler) {
+        super(DIFF_CALLBACK);
+        this.mContext = mContext;
+        mClickHandler = handler;
     }
 
-    @Override
+   /* @Override
     public int getItemCount() {
         return mData != null ? mData.size() : 0;
     }
@@ -63,6 +63,22 @@ public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapte
     public void setData(List<Artist> artist) {
         mData = artist;
         notifyDataSetChanged();
+    }*/
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        Artist artist = getItem(position);
+        if (artist != null){
+            holder.artistName.setText(artist.getName());
+            Glide
+                    .with(mContext)
+                    .load(artist.getImageUrl())
+                    .centerCrop()
+                    .placeholder(R.drawable.placeholder_artist_image)
+                    .error(R.drawable.placeholder_artist_image)
+                    .into(holder.albumImage);
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -81,7 +97,7 @@ public class ArtistSearchAdapter extends RecyclerView.Adapter<ArtistSearchAdapte
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
-            mClickHandler.onClick(mData.get(pos).getName());
+            mClickHandler.onClick(getItem(pos).getName());
         }
     }
 }

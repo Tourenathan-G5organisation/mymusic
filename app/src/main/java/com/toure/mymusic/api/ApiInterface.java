@@ -11,7 +11,7 @@ import retrofit2.http.Query;
 public interface ApiInterface {
 
     @GET("?method=artist.search&format=json&limit=50")
-    Call<ArtistQuery> searchArtist(@Query("artist") String artistName, @Query("api_key") String apiKey);
+    Call<ArtistQuery> searchArtist(@Query("artist") String artistName, @Query("api_key") String apiKey, @Query("page") int page);
 
     @GET("?method=artist.gettopalbums&format=json&limit=100")
     Call<AlbumQuery> getArtistBestAlbum(@Query("artist") String artistName, @Query("api_key") String apiKey);
