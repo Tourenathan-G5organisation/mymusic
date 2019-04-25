@@ -2,28 +2,25 @@ package com.toure.mymusic;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.toure.mymusic.adapter.BestArtistAlbumsAdapter;
-import com.toure.mymusic.api.ApiClient;
-import com.toure.mymusic.api.ApiInterface;
-import com.toure.mymusic.data.AlbumQuery;
 import com.toure.mymusic.util.ItemOffsetDecoration;
-import com.toure.mymusic.util.Utility;
 
 import java.util.Locale;
 import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+
+import static com.toure.mymusic.BestAlbumViewModel.FAILURE;
+import static com.toure.mymusic.BestAlbumViewModel.NO_RESULTS;
+import static com.toure.mymusic.BestAlbumViewModel.SUCCESS;
 
 public class BestAlbumActivity extends AppCompatActivity implements OnClickAlbumHandler {
 
@@ -34,6 +31,7 @@ public class BestAlbumActivity extends AppCompatActivity implements OnClickAlbum
     @BindView(R.id.progress_circular)
     ProgressBar progressBar;
     BestArtistAlbumsAdapter mAdapter;
+    BestAlbumViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +50,25 @@ public class BestAlbumActivity extends AppCompatActivity implements OnClickAlbum
             String artistName = getIntent().getStringExtra(Intent.EXTRA_TEXT);
             setTitle(String.format(Locale.getDefault(), "%s %s", getString(R.string.title_activity_best_album), artistName));
             displayProgress();
-            getArtistBestAlbum(artistName);
+            BestAlbumViewModelFactory factory = new BestAlbumViewModelFactory(artistName);
+            viewModel = ViewModelProviders.of(this, factory).get(BestAlbumViewModel.class);
+            mAdapter.setArtist(artistName);
+            viewModel.getAlbumList().observe(this, albums -> mAdapter.submitList(albums));
+
+            viewModel.getSearchStatus().observe(this, status -> {
+                switch (status){
+                    case SUCCESS:
+                        displayContent();
+                        break;
+                    case FAILURE:
+                        break;
+                    case NO_RESULTS:
+                        break;
+
+
+                }
+            });
+
         }
     }
 
@@ -72,22 +88,7 @@ public class BestAlbumActivity extends AppCompatActivity implements OnClickAlbum
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
-    void getArtistBestAlbum(String artistName) {
-        Call<AlbumQuery> call = ApiClient.getClient().create(ApiInterface.class).getArtistBestAlbum(artistName, Utility.getApiKey());
-        call.enqueue(new Callback<AlbumQuery>() {
-            @Override
-            public void onResponse(Call<AlbumQuery> call, Response<AlbumQuery> response) {
-                mAdapter.setArtist(response.body().getArtistName());
-                mAdapter.setData(response.body().getAlbums());
-                displayContent();
-            }
 
-            @Override
-            public void onFailure(Call<AlbumQuery> call, Throwable t) {
-                Log.e(TAG, t.getLocalizedMessage());
-            }
-        });
-    }
 
     @Override
     public void onClick(String artistName, String albumName) {

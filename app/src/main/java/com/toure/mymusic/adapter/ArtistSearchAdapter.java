@@ -55,15 +55,7 @@ public class ArtistSearchAdapter extends PagedListAdapter<Artist, ArtistSearchAd
         mClickHandler = handler;
     }
 
-   /* @Override
-    public int getItemCount() {
-        return mData != null ? mData.size() : 0;
-    }
 
-    public void setData(List<Artist> artist) {
-        mData = artist;
-        notifyDataSetChanged();
-    }*/
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -88,7 +80,7 @@ public class ArtistSearchAdapter extends PagedListAdapter<Artist, ArtistSearchAd
         @BindView(R.id.artist_name)
         TextView artistName;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
