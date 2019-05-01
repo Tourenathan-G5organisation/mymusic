@@ -12,21 +12,33 @@ import com.toure.mymusic.OnClickAlbumHandler;
 import com.toure.mymusic.R;
 import com.toure.mymusic.data.Album;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.ViewHolder> {
+public class MainScreenAdapter extends PagedListAdapter<Album, MainScreenAdapter.ViewHolder> {
 
     private static final String TAC = MainScreenAdapter.class.getSimpleName();
     private Context mContext;
-    private List<Album> mData;
     private OnClickAlbumHandler mClickHandler;
 
+    private static DiffUtil.ItemCallback<Album> DIFF_CALLBACK = new DiffUtil.ItemCallback<Album>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Album oldItem, @NonNull Album newItem) {
+            return oldItem.getMbid().equals(newItem.getMbid()) && oldItem.getName().equals(newItem.getName());
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Album oldItem, @NonNull Album newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
+
     public MainScreenAdapter(Context mContext, OnClickAlbumHandler handler) {
+        super(DIFF_CALLBACK);
         this.mContext = mContext;
         mClickHandler = handler;
     }
@@ -43,27 +55,23 @@ public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // TODO: Set the data
-        holder.albumName.setText(mData.get(position).getName());
-        holder.artistName.setText(mData.get(position).getArtistName());
-        Glide
-                .with(mContext)
-                .load(mData.get(position).getImageUrl())
-                .centerCrop()
-                .placeholder(R.drawable.placeholder_artist_image)
-                .error(R.drawable.placeholder_artist_image)
-                .into(holder.albumImage);
+
+        Album album =  getItem(position);
+        if (album  != null){
+            holder.albumName.setText(album.getName());
+            holder.artistName.setText(album.getArtistName());
+            Glide
+                    .with(mContext)
+                    .load(album.getImageUrl())
+                    .centerCrop()
+                    .placeholder(R.drawable.placeholder_artist_image)
+                    .error(R.drawable.placeholder_artist_image)
+                    .into(holder.albumImage);
+        }
+
     }
 
-    @Override
-    public int getItemCount() {
-        return mData != null ? mData.size() : 0;
-    }
 
-    public void setData(List<Album> albums) {
-        mData = albums;
-        notifyDataSetChanged();
-    }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -74,7 +82,7 @@ public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.Vi
         @BindView(R.id.artist_name)
         TextView artistName;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
@@ -83,7 +91,7 @@ public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.Vi
         @Override
         public void onClick(View v) {
             int pos = getAdapterPosition();
-            mClickHandler.onClick(mData.get(pos).getArtistName(), mData.get(pos).getName());
+            mClickHandler.onClick(getItem(pos).getArtistName(), getItem(pos).getName());
         }
     }
 }

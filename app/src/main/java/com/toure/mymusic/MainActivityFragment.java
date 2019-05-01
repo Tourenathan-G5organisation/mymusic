@@ -52,7 +52,9 @@ public class MainActivityFragment extends Fragment implements OnClickAlbumHandle
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         mViewModel.getAlbums().observe(this, albums -> {
-            if (albums != null && albums.size() > 0) {
+            mAdapter.submitList(albums);
+
+            if (mAdapter.getItemCount() > 0) {
                 Log.d("Main", "albums: " + albums.size());
                 messageTextView.setVisibility(View.GONE);
                 mRecyclerView.setVisibility(View.VISIBLE);
@@ -60,7 +62,6 @@ public class MainActivityFragment extends Fragment implements OnClickAlbumHandle
                 messageTextView.setVisibility(View.VISIBLE);
                 mRecyclerView.setVisibility(View.GONE);
             }
-            mAdapter.setData(albums);
         });
     }
 

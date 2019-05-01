@@ -1,8 +1,7 @@
 package com.toure.mymusic.data;
 
-import java.util.List;
-
 import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -15,11 +14,11 @@ public interface AlbumDao {
 
     /**
      * Get all albums available in the DB
-     *
+     * The Integer type parameter tells Room to use a PositionalDataSource object.
      * @return All saved albums
      */
     @Query("SELECT * FROM albums ORDER BY album_name ASC")
-    LiveData<List<Album>> getAllAlbums();
+    DataSource.Factory<Integer, Album> getAllAlbums();
 
     /**
      * Get the album with the specified albumName and artistName
